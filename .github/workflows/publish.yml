@@ -29,8 +29,11 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
+
+      - name: Configure npm authentication
+        run: |
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GITHUB_TOKEN }}" > ~/.npmrc
+          echo "@vip-gw2-guilds:registry=https://npm.pkg.github.com" >> ~/.npmrc
 
       - name: Install dependencies
         run: pnpm install
