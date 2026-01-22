@@ -37,7 +37,18 @@ export async function encode(
   paletteMapper: PaletteMapper,
   options: EncodeOptions = {},
 ): Promise<string> {
-  const buffer = Buffer.alloc(OFFICIAL_CODE_LENGTH);
+  // Calculate total buffer size (base 44 bytes + extended data)
+  let totalSize = OFFICIAL_CODE_LENGTH;
+
+  if (buildCode.weapons && buildCode.weapons.length > 0) {
+    totalSize += 1 + (buildCode.weapons.length * 2); // 1 byte count + N × 2 bytes
+  }
+
+  if (buildCode.skillVariants && buildCode.skillVariants.length > 0) {
+    totalSize += 1 + (buildCode.skillVariants.length * 4); // 1 byte count + N × 4 bytes
+  }
+
+  const buffer = Buffer.alloc(totalSize);
   let pos = 0;
 
   // Helper to write a single byte
@@ -152,9 +163,34 @@ export async function encode(
     // Engineer toolbelt skills are NOT part of official 44-byte format
   }
 
-  // 6. Base64 encode
-  const base64 = buffer.toString('base64');
+  // 6. Write extended data (weapons and skill variants) if present
+  // Position should be at byte 44 or later after profession-specific data
+  pos = OFFICIAL_CODE_LENGTH;
 
-  // 7. Wrap in chat link format if requested (default: true)
+  if (buildCode.weapons && buildCode.weapons.length > 0) {
+    // Write weapon count
+    buffer[pos++] = buildCode.weapons.length;
+    // Write weapon IDs
+    for (const weaponId of buildCode.weapons) {
+      buffer.writeUInt16LE(weaponId, pos);
+      pos += 2;
+    }
+  }
+
+  if (buildCode.skillVariants && buildCode.skillVariants.length > 0) {
+    // Write skill variant count
+    buffer[pos++] = buildCode.skillVariants.length;
+    // Write skill variant IDs
+    for (const skillId of buildCode.skillVariants) {
+      buffer.writeUInt32LE(skillId, pos);
+      pos += 4;
+    }
+  }
+
+  // 7. Base64 encode (only the bytes we actually used)
+  const actualBuffer = buffer.slice(0, totalSize);
+  const base64 = actualBuffer.toString('base64');
+
+  // 8. Wrap in chat link format if requested (default: true)
   return options.wrapInChatLink !== false ? `[&${base64}]` : base64;
 }
