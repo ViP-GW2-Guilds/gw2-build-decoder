@@ -39,13 +39,22 @@ export async function encode(
 ): Promise<string> {
   // Calculate total buffer size (base 44 bytes + extended data)
   let totalSize = OFFICIAL_CODE_LENGTH;
+  const hasExtendedData =
+    (buildCode.weapons && buildCode.weapons.length > 0) ||
+    (buildCode.skillVariants && buildCode.skillVariants.length > 0);
 
-  if (buildCode.weapons && buildCode.weapons.length > 0) {
-    totalSize += 1 + (buildCode.weapons.length * 2); // 1 byte count + N × 2 bytes
-  }
+  if (hasExtendedData) {
+    // Weapon count byte + weapons
+    totalSize += 1; // weapon count byte
+    if (buildCode.weapons && buildCode.weapons.length > 0) {
+      totalSize += buildCode.weapons.length * 2;
+    }
 
-  if (buildCode.skillVariants && buildCode.skillVariants.length > 0) {
-    totalSize += 1 + (buildCode.skillVariants.length * 4); // 1 byte count + N × 4 bytes
+    // Skill variant count byte + variants
+    totalSize += 1; // skill variant count byte
+    if (buildCode.skillVariants && buildCode.skillVariants.length > 0) {
+      totalSize += buildCode.skillVariants.length * 4;
+    }
   }
 
   const buffer = Buffer.alloc(totalSize);
@@ -164,26 +173,32 @@ export async function encode(
   }
 
   // 6. Write extended data (weapons and skill variants) if present
-  // Position should be at byte 44 or later after profession-specific data
+  // Position should be at byte 44 after base format
   pos = OFFICIAL_CODE_LENGTH;
 
-  if (buildCode.weapons && buildCode.weapons.length > 0) {
-    // Write weapon count
-    buffer[pos++] = buildCode.weapons.length;
-    // Write weapon IDs
-    for (const weaponId of buildCode.weapons) {
-      buffer.writeUInt16LE(weaponId, pos);
-      pos += 2;
-    }
-  }
+  if (hasExtendedData) {
+    // Write weapon count (always write the count byte if we have extended data)
+    const weaponCount = buildCode.weapons?.length ?? 0;
+    buffer[pos++] = weaponCount;
 
-  if (buildCode.skillVariants && buildCode.skillVariants.length > 0) {
-    // Write skill variant count
-    buffer[pos++] = buildCode.skillVariants.length;
-    // Write skill variant IDs
-    for (const skillId of buildCode.skillVariants) {
-      buffer.writeUInt32LE(skillId, pos);
-      pos += 4;
+    // Write weapon IDs if any
+    if (buildCode.weapons && buildCode.weapons.length > 0) {
+      for (const weaponId of buildCode.weapons) {
+        buffer.writeUInt16LE(weaponId, pos);
+        pos += 2;
+      }
+    }
+
+    // Write skill variant count (always write the count byte if we have extended data)
+    const variantCount = buildCode.skillVariants?.length ?? 0;
+    buffer[pos++] = variantCount;
+
+    // Write skill variant IDs if any
+    if (buildCode.skillVariants && buildCode.skillVariants.length > 0) {
+      for (const skillId of buildCode.skillVariants) {
+        buffer.writeUInt32LE(skillId, pos);
+        pos += 4;
+      }
     }
   }
 
