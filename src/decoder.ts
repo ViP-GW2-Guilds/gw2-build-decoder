@@ -180,6 +180,10 @@ export async function decode(
 
 /**
  * Decode skills using standard palette mapping
+ *
+ * GW2 build codes store 10 skill slots (5 terrestrial + 5 aquatic) in bytes 8-27.
+ * Each slot is 2 bytes (uint16 little-endian palette index).
+ * Order: heal, aquaticHeal, util1, util2, util3, aquaticUtil1, aquaticUtil2, aquaticUtil3, elite, aquaticElite
  */
 async function decodeSkills(
   view: BinaryView,
@@ -187,24 +191,35 @@ async function decodeSkills(
   paletteMapper: PaletteMapper,
 ): Promise<Skills> {
   const skills: Skills = {
+    // Terrestrial
     heal: 0,
     utility1: 0,
     utility2: 0,
     utility3: 0,
     elite: 0,
+    // Aquatic
+    aquaticHeal: 0,
+    aquaticUtility1: 0,
+    aquaticUtility2: 0,
+    aquaticUtility3: 0,
+    aquaticElite: 0,
   };
 
   const skillKeys: (keyof Skills)[] = [
     'heal',
+    'aquaticHeal',
     'utility1',
     'utility2',
     'utility3',
+    'aquaticUtility1',
+    'aquaticUtility2',
+    'aquaticUtility3',
     'elite',
+    'aquaticElite',
   ];
 
   for (const key of skillKeys) {
-    const paletteIndex = view.readUInt16LE();
-    view.skip(2); // Skip 2 padding bytes
+    const paletteIndex = view.readUInt16LE(); // 2 bytes per skill slot
 
     if (paletteIndex !== 0) {
       try {
@@ -246,24 +261,35 @@ async function decodeRevenant(
     legend1 = legend1Byte;
 
     skills = {
+      // Terrestrial
       heal: 0,
       utility1: 0,
       utility2: 0,
       utility3: 0,
       elite: 0,
+      // Aquatic
+      aquaticHeal: 0,
+      aquaticUtility1: 0,
+      aquaticUtility2: 0,
+      aquaticUtility3: 0,
+      aquaticElite: 0,
     };
 
     const skillKeys: (keyof Skills)[] = [
       'heal',
+      'aquaticHeal',
       'utility1',
       'utility2',
       'utility3',
+      'aquaticUtility1',
+      'aquaticUtility2',
+      'aquaticUtility3',
       'elite',
+      'aquaticElite',
     ];
 
     for (const key of skillKeys) {
-      const paletteIndex = view.readUInt16LE();
-      view.skip(2); // Skip 2 padding bytes
+      const paletteIndex = view.readUInt16LE(); // 2 bytes per skill slot
 
       if (paletteIndex !== 0) {
         try {

@@ -56,19 +56,35 @@ export enum TraitChoice {
 }
 
 /**
- * Build skill configuration (5 skills: heal, 3 utilities, elite)
+ * Build skill configuration (10 skills: 5 terrestrial + 5 aquatic)
+ *
+ * GW2 build codes store both terrestrial and aquatic skill bars.
+ * In v1.0.0+, all 10 slots are preserved. In v0.x, only terrestrial skills were stored.
  */
 export interface Skills {
-  /** Heal skill ID */
+  // Terrestrial skills (land)
+  /** Terrestrial heal skill ID */
   heal: number;
-  /** First utility skill ID */
+  /** Terrestrial first utility skill ID */
   utility1: number;
-  /** Second utility skill ID */
+  /** Terrestrial second utility skill ID */
   utility2: number;
-  /** Third utility skill ID */
+  /** Terrestrial third utility skill ID */
   utility3: number;
-  /** Elite skill ID */
+  /** Terrestrial elite skill ID */
   elite: number;
+
+  // Aquatic skills (underwater) - added in v1.0.0
+  /** Aquatic heal skill ID */
+  aquaticHeal: number;
+  /** Aquatic first utility skill ID */
+  aquaticUtility1: number;
+  /** Aquatic second utility skill ID */
+  aquaticUtility2: number;
+  /** Aquatic third utility skill ID */
+  aquaticUtility3: number;
+  /** Aquatic elite skill ID */
+  aquaticElite: number;
 }
 
 /**

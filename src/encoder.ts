@@ -5,9 +5,6 @@
 import {
   OFFICIAL_CODE_LENGTH,
   OFFICIAL_TYPE_INDICATOR,
-  AQUATIC_OFFSET,
-  SKILL_COUNT,
-  BYTES_PER_SKILL,
 } from './constants.js';
 import { BuildCodeError, BuildCodeErrorCode } from './errors.js';
 import type {
@@ -86,20 +83,24 @@ export async function encode(
     }
   }
 
-  // 4. Write skills with aquatic offset
-  const skillOffset = options.aquatic ? AQUATIC_OFFSET : 0;
-  const skillPos = pos + skillOffset;
-
+  // 4. Write all 10 skill slots (5 terrestrial + 5 aquatic)
+  // Format: heal, aquaticHeal, util1, util2, util3, aquaticUtil1, aquaticUtil2, aquaticUtil3, elite, aquaticElite
+  // Each skill is 2 bytes (uint16 palette index)
   const skillKeys: (keyof Skills)[] = [
     'heal',
+    'aquaticHeal',
     'utility1',
     'utility2',
     'utility3',
+    'aquaticUtility1',
+    'aquaticUtility2',
+    'aquaticUtility3',
     'elite',
+    'aquaticElite',
   ];
 
-  for (let i = 0; i < SKILL_COUNT; i++) {
-    const skillId = buildCode.skills[skillKeys[i]];
+  for (const key of skillKeys) {
+    const skillId = (buildCode.skills[key] ?? 0) as number; // Support old BuildCode without aquatic fields
     let paletteIndex = 0;
 
     if (skillId !== 0) {
@@ -117,36 +118,30 @@ export async function encode(
       }
     }
 
-    // Write uint16 little-endian at the correct position
-    buffer.writeUInt16LE(paletteIndex, skillPos + i * BYTES_PER_SKILL);
+    buffer.writeUInt16LE(paletteIndex, pos);
+    pos += 2;
   }
 
-  // Advance position past skills section
-  pos += SKILL_COUNT * BYTES_PER_SKILL;
+  // Note: options.aquatic is now deprecated - all 10 slots are always written
 
   // 5. Write profession-specific data (starting at byte 28)
+  // Position should now be at byte 28 after writing all 10 skill slots
   if (buildCode.professionSpecific) {
     const profSpec = buildCode.professionSpecific;
 
     if (profSpec.type === 'ranger') {
-      // Ranger: 2 pet IDs
-      if (options.aquatic) pos += AQUATIC_OFFSET;
+      // Ranger: 2 pet IDs at bytes 28-29
       writeByte(profSpec.pets[0]);
       writeByte(profSpec.pets[1]);
     } else if (profSpec.type === 'revenant') {
-      // Revenant: 2 legend IDs + 3 inactive utility skills
-      if (options.aquatic) pos += AQUATIC_OFFSET;
+      // Revenant: 2 legend IDs at bytes 28-29, then inactive skills at bytes 32-37
       writeByte(profSpec.legends[0]);
       writeByte(profSpec.legends[1] ?? 0);
 
-      // Position for inactive skills
-      if (options.aquatic) {
-        pos += 6;
-      } else {
-        pos += 2;
-      }
+      // Skip 2 bytes gap (bytes 30-31)
+      pos += 2;
 
-      // Write inactive utility skills if present
+      // Write inactive utility skills if present (bytes 32-37)
       if (profSpec.inactiveSkills) {
         for (let i = 0; i < 3; i++) {
           const skillId = profSpec.inactiveSkills[i];

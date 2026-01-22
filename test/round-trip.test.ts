@@ -35,6 +35,11 @@ describe('round-trip encoding/decoding', () => {
         utility2: 10300,
         utility3: 10400,
         elite: 10500,
+        aquaticHeal: 0,
+        aquaticUtility1: 0,
+        aquaticUtility2: 0,
+        aquaticUtility3: 0,
+        aquaticElite: 0,
       },
     };
 
@@ -59,6 +64,11 @@ describe('round-trip encoding/decoding', () => {
         utility2: 13000,
         utility3: 14000,
         elite: 15000,
+        aquaticHeal: 0,
+        aquaticUtility1: 0,
+        aquaticUtility2: 0,
+        aquaticUtility3: 0,
+        aquaticElite: 0,
       },
       professionSpecific: {
         type: 'ranger',
@@ -87,6 +97,11 @@ describe('round-trip encoding/decoding', () => {
         utility2: 13500,
         utility3: 14500,
         elite: 15500,
+        aquaticHeal: 0,
+        aquaticUtility1: 0,
+        aquaticUtility2: 0,
+        aquaticUtility3: 0,
+        aquaticElite: 0,
       },
       professionSpecific: {
         type: 'revenant',
@@ -111,6 +126,11 @@ describe('round-trip encoding/decoding', () => {
         utility2: 0,
         utility3: 0,
         elite: 0,
+        aquaticHeal: 0,
+        aquaticUtility1: 0,
+        aquaticUtility2: 0,
+        aquaticUtility3: 0,
+        aquaticElite: 0,
       },
     };
 
@@ -135,6 +155,11 @@ describe('round-trip encoding/decoding', () => {
         utility2: 0,
         utility3: 0,
         elite: 10500,
+        aquaticHeal: 0,
+        aquaticUtility1: 0,
+        aquaticUtility2: 0,
+        aquaticUtility3: 0,
+        aquaticElite: 0,
       },
     };
 
@@ -154,6 +179,11 @@ describe('round-trip encoding/decoding', () => {
         utility2: 0,
         utility3: 0,
         elite: 0,
+        aquaticHeal: 0,
+        aquaticUtility1: 0,
+        aquaticUtility2: 0,
+        aquaticUtility3: 0,
+        aquaticElite: 0,
       },
     };
 
@@ -184,11 +214,18 @@ describe('round-trip encoding/decoding', () => {
         },
       ],
       skills: {
-        heal: 11000,
-        utility1: 12000,
-        utility2: 13000,
-        utility3: 14000,
-        elite: 15000,
+        // Terrestrial skills
+        heal: 0,
+        utility1: 13000,
+        utility2: 14000,
+        utility3: 0,
+        elite: 0,
+        // Aquatic skills (different from terrestrial)
+        aquaticHeal: 12000,
+        aquaticUtility1: 0,
+        aquaticUtility2: 0,
+        aquaticUtility3: 15000,
+        aquaticElite: 15130,
       },
       professionSpecific: {
         type: 'ranger',
@@ -196,9 +233,14 @@ describe('round-trip encoding/decoding', () => {
       },
     };
 
-    const encoded = await encode(original, mockMapper, { aquatic: true });
-    const decoded = await decode(encoded, mockMapper, { aquatic: true });
+    const encoded = await encode(original, mockMapper);
+    const decoded = await decode(encoded, mockMapper);
 
     expect(decoded).toEqual(original);
+
+    // Verify aquatic skills were preserved
+    expect(decoded.skills.aquaticHeal).toBe(12000);
+    expect(decoded.skills.aquaticUtility3).toBe(15000);
+    expect(decoded.skills.aquaticElite).toBe(15130);
   });
 });
