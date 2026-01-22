@@ -63,10 +63,10 @@ export async function decode(
     );
   }
 
-  // Validate buffer length
-  if (buffer.byteLength !== OFFICIAL_CODE_LENGTH) {
+  // Validate buffer length (min 44 bytes for base format, can be longer with weapons/variants)
+  if (buffer.byteLength < OFFICIAL_CODE_LENGTH) {
     throw new BuildCodeError(
-      `Invalid build code length: ${buffer.byteLength} (expected ${OFFICIAL_CODE_LENGTH})`,
+      `Invalid build code length: ${buffer.byteLength} (minimum ${OFFICIAL_CODE_LENGTH} bytes required)`,
       BuildCodeErrorCode.INVALID_LENGTH,
     );
   }
@@ -141,11 +141,40 @@ export async function decode(
     }
   }
 
+  // Parse extended data (weapons and skill variants) if present (post-June 2023 format)
+  let weapons: number[] | undefined;
+  let skillVariants: number[] | undefined;
+
+  if (buffer.byteLength > OFFICIAL_CODE_LENGTH) {
+    // Create a view positioned at byte 44 to read extended data
+    const extendedView = new BinaryView(buffer, OFFICIAL_CODE_LENGTH);
+
+    // Read weapon array
+    const weaponCount = extendedView.readByte();
+    if (weaponCount > 0) {
+      weapons = [];
+      for (let i = 0; i < weaponCount; i++) {
+        weapons.push(extendedView.readUInt16LE());
+      }
+    }
+
+    // Read skill variant array
+    const variantCount = extendedView.readByte();
+    if (variantCount > 0) {
+      skillVariants = [];
+      for (let i = 0; i < variantCount; i++) {
+        skillVariants.push(extendedView.readUInt32LE());
+      }
+    }
+  }
+
   return {
     profession,
     specializations,
     skills,
     professionSpecific,
+    weapons,
+    skillVariants,
   };
 }
 

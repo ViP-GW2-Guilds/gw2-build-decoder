@@ -43,6 +43,16 @@ export class BinaryView {
   }
 
   /**
+   * Read a uint32 (little-endian) and advance position
+   * @returns The uint32 value
+   */
+  readUInt32LE(): number {
+    const value = this.view.getUint32(this.pos, true);
+    this.pos += 4;
+    return value;
+  }
+
+  /**
    * Skip forward by N bytes
    * @param bytes - Number of bytes to skip
    */
