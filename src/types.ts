@@ -14,6 +14,10 @@ export interface BuildCode {
   skills: Skills;
   /** Profession-specific data (pets, legends, toolbelt skills) */
   professionSpecific?: ProfessionSpecificData;
+  /** Equipped weapon types (added in June 2023 update) */
+  weapons?: number[];
+  /** Skill variant overrides (added in June 2023 update) */
+  skillVariants?: number[];
 }
 
 /**
