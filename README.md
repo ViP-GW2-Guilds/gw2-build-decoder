@@ -55,11 +55,11 @@ const encoded = await encode(build, mapper);
 console.log(encoded); // [&DQg1KTI...]
 ```
 
-## What's New in v1.0.0
+## What's New in v1.0.0 🎉
 
-### 🎯 Aquatic Skills Support (BREAKING CHANGE)
+### 🎯 Aquatic Skills Support
 
-GW2 build codes store **10 skill slots** (5 terrestrial + 5 aquatic). In v0.x, aquatic skills were **permanently lost** on decode. v1.0.0 fixes this.
+GW2 build codes store **10 skill slots** (5 terrestrial + 5 aquatic). In v0.x, aquatic skills were **permanently lost** on decode. v1.0.0 fixes this critical issue.
 
 **v0.x (Data Loss):**
 ```typescript

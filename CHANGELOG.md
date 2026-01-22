@@ -5,7 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0-alpha.2] - 2026-01-22
+## [1.0.0] - 2026-01-22
+
+### Production Release
+
+This is the first production-ready release with complete data preservation and validation capabilities.
+
+**Highlights:**
+- ✅ All 10 skill slots (terrestrial + aquatic) now preserved
+- ✅ Zero data loss on round-trip encode/decode
+- ✅ BuildValidator for verifying builds against GW2 API
+- ✅ Support for modern extended build codes (50+ bytes)
+- ✅ 27 tests passing, production-ready
+
+**See MIGRATION.md for upgrade guide from v0.x**
+
+### Added
+- BuildValidator class for optional build validation against GW2 API
+- Validation types (ValidationResult, ValidationError, ValidationWarning)
+- MetadataProvider interface for API access
+- Comprehensive validator test suite (10 tests)
+- Support for all 10 skill slots (terrestrial + aquatic)
+- TERRESTRIAL_SKILL_COUNT constant
+- MIGRATION.md with detailed upgrade guide
+- Complete CHANGELOG
+
+### Changed
+- **BREAKING:** Extended Skills interface with 5 aquatic skill fields
+- **BREAKING:** SKILL_COUNT constant changed from 5 to 10
+- **BREAKING:** BYTES_PER_SKILL constant changed from 4 to 2
+- Fixed decoder binary reading - removed incorrect `skip(2)`
+- Encoder now writes all 10 skill slots
+- Updated all test fixtures to include aquatic skill fields
+- Updated README with v1.0.0 features and validation examples
+
+### Deprecated
+- DecodeOptions.aquatic - no longer needed, all 10 slots always decoded
+
+### Fixed
+- **Critical:** Aquatic skills are no longer lost on round-trip encode/decode
+- Binary structure interpretation error (was reading skills as 4 bytes each, correct is 2 bytes)
+- Extended format encoder now writes both count bytes correctly
+
+## [1.0.0-alpha.2] - 2026-01-22 (Pre-release)
 
 ### Added
 - BuildValidator class for optional build validation against GW2 API
