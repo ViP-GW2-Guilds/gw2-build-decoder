@@ -8,6 +8,19 @@
 export { decode } from './decoder.js';
 export { encode } from './encoder.js';
 
+// Validation (opt-in)
+export { BuildValidator } from './validator.js';
+export type { MetadataProvider } from './validator.js';
+export type {
+  ValidationResult,
+  ValidationError,
+  ValidationWarning,
+  SkillInfo,
+  SpecializationInfo,
+  PetInfo,
+} from './validation-types.js';
+export { ValidationErrorType, ValidationWarningType } from './validation-types.js';
+
 // Types
 export type {
   BuildCode,

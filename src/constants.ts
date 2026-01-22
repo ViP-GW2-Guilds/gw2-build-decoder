@@ -14,11 +14,14 @@ export const AQUATIC_OFFSET = 2;
 /** Number of specialization slots */
 export const SPECIALIZATION_COUNT = 3;
 
-/** Number of skill slots (heal + 3 utilities + elite) */
-export const SKILL_COUNT = 5;
+/** Number of skill slots (5 terrestrial + 5 aquatic = 10 total) */
+export const SKILL_COUNT = 10;
 
-/** Bytes per skill entry (uint16 palette index + 2 padding) */
-export const BYTES_PER_SKILL = 4;
+/** Bytes per skill entry (uint16 palette index, no padding) */
+export const BYTES_PER_SKILL = 2;
+
+/** Number of terrestrial skill slots (heal + 3 utilities + elite) */
+export const TERRESTRIAL_SKILL_COUNT = 5;
 
 /** Mechanist elite specialization ID */
 export const MECHANIST_SPEC_ID = 70;
