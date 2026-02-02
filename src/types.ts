@@ -137,10 +137,14 @@ export interface RevenantData {
 
 /**
  * Engineer-specific data (toolbelt skills for Mechanist)
+ *
+ * @deprecated Engineer morph skills are NOT encoded in GW2 build templates.
+ * This type is kept for backwards compatibility but will never be returned by the decoder.
+ * Confirmed via in-game testing that morph skills are not stored in or populated from build codes.
  */
 export interface EngineerData {
   type: 'engineer';
-  /** Three toolbelt skill IDs (F2-F4) */
+  /** Three toolbelt skill IDs (F2-F4) - NOT USED (morph skills not in build codes) */
   toolbeltSkills: [number, number, number];
 }
 

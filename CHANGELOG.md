@@ -5,16 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.1] - 2026-02-01
+## [1.0.2] - 2026-02-01
 
 ### Fixed
-- Engineer Amalgam morph skills are now correctly decoded from extended data section
-- Extended data parsing now properly handles Engineer profession (morph skills instead of weapons)
-- Added `decodeEngineerData()` function to extract toolbelt skills from palette indices
+- **CORRECTION**: Engineer morph skills are NOT encoded in GW2 build templates
+- Fixed crash when decoding Engineer builds with extended data
+- Extended data for Engineer builds is now consumed correctly to prevent crashes
+- Decoder now returns `undefined` for `professionSpecific` on Engineer builds (correct behavior)
 
-### Added
-- Test case for Engineer Amalgam builds with morph skills
-- Test fixture `amalgamWithMorphSkills` for Engineer profession-specific data validation
+### Changed
+- Deprecated `EngineerData` type (kept for backwards compatibility but never returned)
+- Updated documentation to clarify that morph skills are not stored in build codes
+- Confirmed via in-game testing that morph skills are neither encoded nor populated from templates
+
+### Removed
+- Removed incorrect morph skill decoding logic from v1.0.1
+- Removed test expecting Engineer morph skills (based on false assumptions)
+
+## [1.0.1] - 2026-02-01 [YANKED]
+
+**This release contained incorrect assumptions about Engineer build codes and has been superseded by v1.0.2.**
+
+### Incorrect Claims (Corrected in v1.0.2)
+- ~~Engineer Amalgam morph skills are decoded from extended data~~ - FALSE
+- ~~Extended data contains morph skills instead of weapons~~ - FALSE
+- Morph skills are NOT in build codes at all (confirmed via in-game testing)
 
 ## [1.0.0] - 2026-01-22
 

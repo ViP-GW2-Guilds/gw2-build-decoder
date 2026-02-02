@@ -152,25 +152,13 @@ describe('decode', () => {
     // Aquatic offset affects skill and profession-specific data positions
   });
 
-  it('should decode Engineer Amalgam build with morph skills', async () => {
-    const build = await decode(
-      OFFICIAL_CODES.amalgamWithMorphSkills.chatLink,
-      mockMapper,
-    );
+  it('should decode Engineer builds without crashing', async () => {
+    // Engineer builds with extended data should not crash
+    // Note: Morph skills are NOT encoded in build templates
+    const build = await decode(OFFICIAL_CODES.amalgam.chatLink, mockMapper);
 
     expect(build.profession).toBe(Profession.Engineer);
-
-    // Check profession-specific data
-    expect(build.professionSpecific).toBeDefined();
-    expect(build.professionSpecific?.type).toBe('engineer');
-
-    if (build.professionSpecific?.type === 'engineer') {
-      // Extended data contains palette indices [90, 54, 51]
-      // MockPaletteMapper adds offset of 10000
-      expect(build.professionSpecific.toolbeltSkills).toEqual([10090, 10054, 10051]);
-    }
-
-    // Should not have weapons array (Engineer uses extended data for morph skills)
-    expect(build.weapons).toBeUndefined();
+    // Engineer profession-specific data (morph skills) is not encoded in build codes
+    expect(build.professionSpecific).toBeUndefined();
   });
 });

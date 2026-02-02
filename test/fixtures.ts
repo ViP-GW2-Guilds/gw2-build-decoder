@@ -90,25 +90,11 @@ export const OFFICIAL_CODES = {
     },
   },
 
-  /** Engineer Mechanist build (no toolbelt skills in official format) */
+  /** Engineer Mechanist/Amalgam build (morph skills NOT encoded in build codes) */
   amalgam: {
     chatLink:
       '[&DQMGFyY7SwAoAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADNQBXAFUAAA==]',
     profession: 3 as Profession, // Engineer
-  },
-
-  /** Engineer Amalgam build with morph skills in extended data */
-  amalgamWithMorphSkills: {
-    chatLink:
-      '[&DQMGOyYvSxoqD4QAhgCVAQcBBwEmAQAAex2JAQAAAAAAAAAAAAAAAAAAAAADWgA2ADMAAA==]',
-    profession: 3 as Profession, // Engineer
-    // Extended data contains 3 morph skill palette indices: [90, 54, 51]
-    professionSpecific: {
-      type: 'engineer' as const,
-      // With MockPaletteMapper offset of 10000:
-      // 90 -> 10090, 54 -> 10054, 51 -> 10051
-      toolbeltSkills: [10090, 10054, 10051] as [number, number, number],
-    },
   },
 } as const;
 
