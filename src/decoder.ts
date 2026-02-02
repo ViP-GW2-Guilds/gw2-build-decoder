@@ -142,6 +142,7 @@ export async function decode(
   }
 
   // Parse extended data (weapons and skill variants) if present (post-June 2023 format)
+  // Special case: Engineer uses extended data for morph skills, not weapons
   let weapons: number[] | undefined;
   let skillVariants: number[] | undefined;
 
@@ -149,21 +150,40 @@ export async function decode(
     // Create a view positioned at byte 44 to read extended data
     const extendedView = new BinaryView(buffer, OFFICIAL_CODE_LENGTH);
 
-    // Read weapon array
-    const weaponCount = extendedView.readByte();
-    if (weaponCount > 0) {
-      weapons = [];
-      for (let i = 0; i < weaponCount; i++) {
-        weapons.push(extendedView.readUInt16LE());
+    // Engineer Amalgam: extended data contains morph skills, not weapons
+    if (profession === 3) {
+      const engineerData = await decodeEngineerData(extendedView, paletteMapper);
+      if (engineerData) {
+        professionSpecific = engineerData;
       }
-    }
+      // After reading Engineer data, check if there's more data for skill variants
+      if (extendedView.position < buffer.byteLength) {
+        const variantCount = extendedView.readByte();
+        if (variantCount > 0) {
+          skillVariants = [];
+          for (let i = 0; i < variantCount; i++) {
+            skillVariants.push(extendedView.readUInt32LE());
+          }
+        }
+      }
+    } else {
+      // Standard extended data format for other professions
+      // Read weapon array
+      const weaponCount = extendedView.readByte();
+      if (weaponCount > 0) {
+        weapons = [];
+        for (let i = 0; i < weaponCount; i++) {
+          weapons.push(extendedView.readUInt16LE());
+        }
+      }
 
-    // Read skill variant array
-    const variantCount = extendedView.readByte();
-    if (variantCount > 0) {
-      skillVariants = [];
-      for (let i = 0; i < variantCount; i++) {
-        skillVariants.push(extendedView.readUInt32LE());
+      // Read skill variant array
+      const variantCount = extendedView.readByte();
+      if (variantCount > 0) {
+        skillVariants = [];
+        for (let i = 0; i < variantCount; i++) {
+          skillVariants.push(extendedView.readUInt32LE());
+        }
       }
     }
   }
@@ -372,5 +392,44 @@ function decodeRangerData(
   return {
     type: 'ranger',
     pets: [pet1, pet2],
+  };
+}
+
+/**
+ * Decode Engineer-specific data (Amalgam morph skills)
+ *
+ * Engineer Amalgam builds store morph skill palette indices in the extended data section.
+ * Format: count byte (3) + three uint16 LE palette indices
+ */
+async function decodeEngineerData(
+  view: BinaryView,
+  paletteMapper: PaletteMapper,
+): Promise<ProfessionSpecificData | undefined> {
+  // Read count byte (should be 3 for Amalgam)
+  const count = view.readByte();
+
+  if (count !== 3) {
+    return undefined; // Not Amalgam or invalid data
+  }
+
+  // Read 3 morph skill palette indices (2 bytes each)
+  const morphSkills: [number, number, number] = [0, 0, 0];
+  for (let i = 0; i < 3; i++) {
+    const paletteIndex = view.readUInt16LE();
+    try {
+      // Convert palette index to skill ID using Engineer profession (3)
+      morphSkills[i] = await paletteMapper.paletteToSkill(3, paletteIndex);
+    } catch (error) {
+      throw new BuildCodeError(
+        `Failed to map Engineer morph skill palette index ${paletteIndex}`,
+        BuildCodeErrorCode.PALETTE_LOOKUP_FAILED,
+        error,
+      );
+    }
+  }
+
+  return {
+    type: 'engineer',
+    toolbeltSkills: morphSkills,
   };
 }

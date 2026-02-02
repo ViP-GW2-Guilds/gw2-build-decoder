@@ -1,6 +1,6 @@
 {
   "name": "@vip-gw2-guilds/gw2-build-decoder",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Decode and encode Guild Wars 2 official build template chat links",
   "type": "module",
   "main": "./dist/index.js",
