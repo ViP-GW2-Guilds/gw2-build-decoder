@@ -77,6 +77,13 @@ export class BinaryView {
   }
 
   /**
+   * Set current position
+   */
+  set position(pos: number) {
+    this.pos = pos;
+  }
+
+  /**
    * Get the underlying buffer
    */
   get buffer(): ArrayBuffer {
