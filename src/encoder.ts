@@ -100,6 +100,13 @@ export async function encode(
     'aquaticElite',
   ];
 
+  // For Revenant, get active legend for palette mapping
+  const activeLegend =
+    buildCode.profession === 9 &&
+    buildCode.professionSpecific?.type === 'revenant'
+      ? buildCode.professionSpecific.legends[0]
+      : undefined;
+
   for (const key of skillKeys) {
     const skillId = (buildCode.skills[key] ?? 0) as number; // Support old BuildCode without aquatic fields
     let paletteIndex = 0;
@@ -109,6 +116,7 @@ export async function encode(
         paletteIndex = await paletteMapper.skillToPalette(
           buildCode.profession,
           skillId,
+          activeLegend,
         );
       } catch (error) {
         throw new BuildCodeError(
@@ -144,13 +152,20 @@ export async function encode(
 
       // Write inactive utility skills if present (bytes 32-37)
       if (profSpec.inactiveSkills) {
+        // Inactive skills use the second legend
+        const inactiveLegend = profSpec.legends[1];
+
         for (let i = 0; i < 3; i++) {
           const skillId = profSpec.inactiveSkills[i];
           let paletteIndex = 0;
 
           if (skillId !== 0) {
             try {
-              paletteIndex = await paletteMapper.skillToPalette(9, skillId);
+              paletteIndex = await paletteMapper.skillToPalette(
+                9,
+                skillId,
+                inactiveLegend,
+              );
             } catch (error) {
               throw new BuildCodeError(
                 `Failed to map Revenant inactive skill ID ${skillId} to palette index`,
