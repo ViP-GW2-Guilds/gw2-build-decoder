@@ -163,17 +163,27 @@ export interface PaletteMapper {
    * Convert a palette index to a skill ID
    * @param profession - The character profession
    * @param paletteIndex - The palette index from the build code
+   * @param legend - Optional legend ID for Revenant profession (required for legend-specific skills)
    * @returns Promise resolving to the corresponding skill ID
    */
-  paletteToSkill(profession: Profession, paletteIndex: number): Promise<number>;
+  paletteToSkill(
+    profession: Profession,
+    paletteIndex: number,
+    legend?: number,
+  ): Promise<number>;
 
   /**
    * Convert a skill ID to a palette index
    * @param profession - The character profession
    * @param skillId - The skill ID to encode
+   * @param legend - Optional legend ID for Revenant profession (required for legend-specific skills)
    * @returns Promise resolving to the corresponding palette index
    */
-  skillToPalette(profession: Profession, skillId: number): Promise<number>;
+  skillToPalette(
+    profession: Profession,
+    skillId: number,
+    legend?: number,
+  ): Promise<number>;
 }
 
 /**

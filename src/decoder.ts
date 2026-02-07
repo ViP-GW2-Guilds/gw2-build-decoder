@@ -306,8 +306,12 @@ async function decodeRevenant(
       if (paletteIndex !== 0) {
         try {
           // For Revenant, palette mapping is legend-specific
-          // The PaletteMapper implementation must handle this
-          skills[key] = await paletteMapper.paletteToSkill(9, paletteIndex);
+          // Pass the active legend (legend1) for proper skill resolution
+          skills[key] = await paletteMapper.paletteToSkill(
+            9,
+            paletteIndex,
+            legend1,
+          );
         } catch (error) {
           throw new BuildCodeError(
             `Failed to map Revenant palette index ${paletteIndex}`,
@@ -332,10 +336,11 @@ async function decodeRevenant(
     const revSkillOffset = offset ? 6 : 2;
     const altSkillView = profSpecView.slice(offset + 2 + revSkillOffset);
 
+    // Decode inactive skills with the second legend
     const altSkills: [number, number, number] = [
-      await paletteMapper.paletteToSkill(9, altSkillView.readUInt16LE()),
-      await paletteMapper.paletteToSkill(9, altSkillView.readUInt16LE()),
-      await paletteMapper.paletteToSkill(9, altSkillView.readUInt16LE()),
+      await paletteMapper.paletteToSkill(9, altSkillView.readUInt16LE(), legend2),
+      await paletteMapper.paletteToSkill(9, altSkillView.readUInt16LE(), legend2),
+      await paletteMapper.paletteToSkill(9, altSkillView.readUInt16LE(), legend2),
     ];
 
     // Check if we need to flip legends (if legend1 was empty but legend2 is set)
