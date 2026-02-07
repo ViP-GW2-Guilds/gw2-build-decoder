@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3] - 2026-02-06
+
+### Fixed
+- **CRITICAL**: Fixed skill order in encoder and decoder (bug introduced in v1.0.0)
+  - v1.0.0-1.0.2 had incorrect skill ordering causing utility2 to be missing in-game for ALL builds
+  - Correct order pairs each terrestrial skill with its aquatic counterpart:
+    `heal, aquaticHeal, util1, aquaticUtil1, util2, aquaticUtil2, util3, aquaticUtil3, elite, aquaticElite`
+  - Previous incorrect order was: `heal, aquaticHeal, util1, util2, util3, aquaticUtil1, aquaticUtil2, aquaticUtil3, elite, aquaticElite`
+  - Confirmed via in-game testing that generated codes now import correctly with all 3 utility skills
+- Fixed Ranger pets not being encoded (encoder skipped extended data for Rangers)
+
+### Changed
+- Updated skill reading/writing order in both encoder and decoder for all professions
+- Updated skill reading order in Revenant-specific decoder
+
 ## [1.0.2] - 2026-02-01
 
 ### Fixed

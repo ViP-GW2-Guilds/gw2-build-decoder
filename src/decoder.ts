@@ -194,7 +194,8 @@ export async function decode(
  *
  * GW2 build codes store 10 skill slots (5 terrestrial + 5 aquatic) in bytes 8-27.
  * Each slot is 2 bytes (uint16 little-endian palette index).
- * Order: heal, aquaticHeal, util1, util2, util3, aquaticUtil1, aquaticUtil2, aquaticUtil3, elite, aquaticElite
+ * Order: heal, aquaticHeal, util1, aquaticUtil1, util2, aquaticUtil2, util3, aquaticUtil3, elite, aquaticElite
+ * (Each terrestrial skill is paired with its aquatic counterpart)
  */
 async function decodeSkills(
   view: BinaryView,
@@ -220,10 +221,10 @@ async function decodeSkills(
     'heal',
     'aquaticHeal',
     'utility1',
-    'utility2',
-    'utility3',
     'aquaticUtility1',
+    'utility2',
     'aquaticUtility2',
+    'utility3',
     'aquaticUtility3',
     'elite',
     'aquaticElite',
@@ -290,10 +291,10 @@ async function decodeRevenant(
       'heal',
       'aquaticHeal',
       'utility1',
-      'utility2',
-      'utility3',
       'aquaticUtility1',
+      'utility2',
       'aquaticUtility2',
+      'utility3',
       'aquaticUtility3',
       'elite',
       'aquaticElite',

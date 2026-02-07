@@ -84,16 +84,17 @@ export async function encode(
   }
 
   // 4. Write all 10 skill slots (5 terrestrial + 5 aquatic)
-  // Format: heal, aquaticHeal, util1, util2, util3, aquaticUtil1, aquaticUtil2, aquaticUtil3, elite, aquaticElite
+  // GW2 pairs each terrestrial skill with its aquatic counterpart
+  // Format: heal, aquaticHeal, util1, aquaticUtil1, util2, aquaticUtil2, util3, aquaticUtil3, elite, aquaticElite
   // Each skill is 2 bytes (uint16 palette index)
   const skillKeys: (keyof Skills)[] = [
     'heal',
     'aquaticHeal',
     'utility1',
-    'utility2',
-    'utility3',
     'aquaticUtility1',
+    'utility2',
     'aquaticUtility2',
+    'utility3',
     'aquaticUtility3',
     'elite',
     'aquaticElite',
